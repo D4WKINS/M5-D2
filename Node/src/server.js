@@ -14,12 +14,12 @@ server.use(cors());
 
 server.use(express.json());
 
-server.use("/authors", authorsRouter)
+server.use("/authors", authorsRouter);
 
 console.log(listEndpoints(server));
 
-server.use(PORT, () => console.log(`Server is running! on port : ${PORT}`))
+server.listen(PORT, () => console.log("✅ Server is running on port : ", PORT));
 
-server.on('error',(error)=>
-console.log(`Server is not running due to : ${error}`)
-)
+server.on("error", (error) =>
+  console.log(`❌ Server is not running due to : ${error}`)
+);
