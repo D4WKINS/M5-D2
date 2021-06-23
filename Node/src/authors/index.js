@@ -1,6 +1,8 @@
+//<Imported from package.json>
+
 import express from "express";
 
-import fs from "fs";//File system
+import fs from "fs";//Import File system
 
 import uniqid from "uniqid";
 
@@ -8,21 +10,24 @@ import path, { dirname } from "path";
 
 import { fileURLToPath } from "url";
 
+// </>
+
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = dirname(__filename);
-
-const authorsFilePath = path.join(__dirname, "authors.json");
-
-const router = express.Router();
+const authorsFilePath = path.join(__dirname, "authors.json"); //This directs us to our file, authors.json
+const router = express.Router(); //Express object
 
 // get all authors
+//Define the method after router in this case the "GET/get" method is being applied 
+//You define routing using methods of the Express app object that correspond to HTTP methods;
+// for example, app.get() to handle GET requests and app.post to handle POST requests
 router.get("/", async (req, res, next) => {
   try {
-    const fileAsBuffer = fs.readFileSync(authorsFilePath);
-    const fileAsString = fileAsBuffer.toString();
-    const fileAsJSON = JSON.parse(fileAsString);
-    res.send(fileAsJSON);
+    const fileAsBuffer = fs.readFileSync(authorsFilePath); //1.Read the file using fs.readFileSync
+    const fileAsString = fileAsBuffer.toString(); //2. Convert the file to a string, "[]"
+    const fileAsJSON = JSON.parse(fileAsString); //3. Convert to a JSON object
+    res.send(fileAsJSON); //Sends our file to the server syntax:res.send(body)
   } catch (error) {
     res.send(500).send({ message: error.message });
   }

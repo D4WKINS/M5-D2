@@ -1,8 +1,12 @@
+//<Imported from package.json>
+
 import express from "express";
 
 import cors from "cors";
 
 import listEndpoints from "express-list-endpoints";
+
+// </>
 
 import authorsRouter from "./authors/index.js";
 
