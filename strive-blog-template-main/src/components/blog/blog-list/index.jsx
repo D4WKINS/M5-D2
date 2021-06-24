@@ -2,7 +2,25 @@ import React, { Component } from "react";
 import { Row, Col } from "react-bootstrap";
 import BlogItem from "../blog-item";
 import posts from "../../../data/posts.json";
+
 export default class BlogList extends Component {
+
+  state = {
+    blogs:[]
+  }
+
+  fetchBlogs(){
+    let response = fetch("localhost:3001/authors")
+    let data = response.json()
+    let myBlogs = data
+    this.setState({blogs:myBlogs})
+    console.log(this.state.blogs)
+  }
+
+  componentDidMount=()=>{
+    this.fetchBlogs()
+  }
+
   render() {
     return (
       <Row>
