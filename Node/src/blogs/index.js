@@ -2,17 +2,10 @@
 
 import express from "express";
 
-import fs from "fs";//Import File system
+//import middlewares
+//</>
 
-import uniqid from "uniqid";
-
-import path, { dirname } from "path";
-
-import { fileURLToPath } from "url";
-
-
-
-// </>
+import {checkBlogPostSchema, checkValidationResult} from "./validation.js"
 
 //The syntax consists of the keyword import, a dot, and the identifier meta ("import.meta").
 // Normally the left-hand side of the dot is the object on which property access is performed,
@@ -26,16 +19,24 @@ const __filename = fileURLToPath(import.meta.url);
 // console.log(__filename)
 
 const __dirname = dirname(__filename);
-const authorsFilePath = path.join(__dirname, "authors.json"); //This directs us to our file, authors.json
-const router = express.Router(); //Assigning express.router to router allows use to refer to router
+import fs from "fs";//Import File system
 
-// get all authors
+import uniqid from "uniqid";
+
+import path, { dirname } from "path";
+
+import { fileURLToPath } from "url";
+const blogsFilePath = path.join(__dirname, "blogs.json"); //This directs us to our file, blogs.json
+const router = express.Router(); //Allows us to use router
+//router syntax: router.METHOD(path, [callback, ...] callback)
+
+// get all blogs
 //Define the method after router in this case the "GET/get" method is being applied 
 //You define routing using methods of the Express app object that correspond to HTTP methods;
 // for example, app.get() to handle GET requests and app.post to handle POST requests
 router.get("/", async (req, res, next) => {
   try {
-    const fileAsBuffer = fs.readFileSync(authorsFilePath); //1.Read the file using fs.readFileSync
+    const fileAsBuffer = fs.readFileSync(blogsFilePath); //1.Read the file using fs.readFileSync
     const fileAsString = fileAsBuffer.toString(); //2. Convert the file to a string, "[]"
     const fileAsJSON = JSON.parse(fileAsString); //3. Convert to a JSON object
     res.send(fileAsJSON); //Sends our file to the server syntax:res.send(body)
@@ -59,7 +60,7 @@ router.post("/", async (req, res, next) => {
                   updatedAt: new Date()
       };
 
-    const fileAsBuffer = fs.readFileSync(authorsFilePath);
+    const fileAsBuffer = fs.readFileSync(blogsFilePath);
 
     const fileAsString = fileAsBuffer.toString();
 
@@ -67,7 +68,7 @@ router.post("/", async (req, res, next) => {
 
     fileAsJSONArray.push(author);
 
-    fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));
+    fs.writeFileSync(blogsFilePath, JSON.stringify(fileAsJSONArray));
 
     res.send(author);
   } catch (error) {
@@ -75,10 +76,10 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// get single authors
-router.get("/:id", async (req, res, next) => { // will handle any request that ends in /id// depends on where the router is "use()'d"
+// get single blogs
+router.get("/:id", async (req, res, next) => {
   try {
-    const fileAsBuffer = fs.readFileSync(authorsFilePath); //1.Read the file using fs.readFileSync
+    const fileAsBuffer = fs.readFileSync(blogsFilePath); //1.Read the file using fs.readFileSync
 
     const fileAsString = fileAsBuffer.toString(); //2. Convert the file to a string, "[]"
 
@@ -89,9 +90,9 @@ router.get("/:id", async (req, res, next) => { // will handle any request that e
       (author) => author.id === req.params.id
     );
 
-    if (!author) {//If author is undefined or null 
-      res // response wit a 404 not found error 
-        .status(404)//and log the message `Author with [id] is not found`
+    if (!author) {
+      res
+        .status(404)
         .send({ message: `Author with ${req.params.id} is not found!` });
     }
     res.send(author);
@@ -100,10 +101,10 @@ router.get("/:id", async (req, res, next) => { // will handle any request that e
   }
 });
 
-// delete author
+// delete blog
 router.delete("/:id", async (req, res, next) => {
   try {
-    const fileAsBuffer = fs.readFileSync(authorsFilePath); //1.Read the file using fs.readFileSync
+    const fileAsBuffer = fs.readFileSync(blogsFilePath); //1.Read the file using fs.readFileSync
 
     const fileAsString = fileAsBuffer.toString(); //2. Convert the file to a string, "[]"
 
@@ -120,10 +121,10 @@ router.delete("/:id", async (req, res, next) => {
     fileAsJSONArray = fileAsJSONArray.filter(//
       (author) =>{
         console.log(author)
-        return author.id !== req.params.id // returns All authors but the one that has the same id we specified i the request
+        return author.id !== req.params.id // returns All blogs but the one that has the same id we specified i the request
       }
     );
-    fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));// Overwriting the authors array with a new array that doesnt contain the author we filtered out
+    fs.writeFileSync(blogsFilePath, JSON.stringify(fileAsJSONArray));// Overwriting the blogs array with a new array that doesnt contain the author we filtered out
     res.status(204).send();//Send updated array to the server
   } catch (error) {
     res.send(500).send({ message: error.message });
@@ -133,7 +134,7 @@ router.delete("/:id", async (req, res, next) => {
 //  update author
 router.put("/:id", async (req, res, next) => {
   try {
-    const fileAsBuffer = fs.readFileSync(authorsFilePath); // 1. Read the file
+    const fileAsBuffer = fs.readFileSync(blogsFilePath); // 1. Read the file
 
     const fileAsString = fileAsBuffer.toString(); // 2. Convert to string
 
@@ -158,7 +159,7 @@ router.put("/:id", async (req, res, next) => {
     };
     fileAsJSONArray[authorIndex] = changedAuthor;
 
-    fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));
+    fs.writeFileSync(blogsFilePath, JSON.stringify(fileAsJSONArray));
     res.send(changedAuthor);
   } catch (error) {
     res.send(500).send({ message: error.message });
